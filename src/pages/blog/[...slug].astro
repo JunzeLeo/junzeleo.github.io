@@ -1,0 +1,163 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
+import "../../styles/typography.css";
+
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead 
+      title={`${post.data.title} | ${SITE_TITLE}`} 
+      description={post.data.description ?? ''} 
+    />
+  </head>
+
+  <body>
+    <main class="blog-container">
+      <article class="blog-article">
+
+        <!-- 🔹 标题 -->
+        <h1 class="blog-title">{post.data.title}</h1>
+
+        <!-- 🔹 日期 -->
+        <p class="blog-date">
+          {post.data.pubDate.toISOString().slice(0, 10)}
+        </p>
+
+        <hr class="blog-divider" />
+
+        <!-- 🔹 正文内容 -->
+        <div class="blog-content">
+          <Content />
+        </div>
+
+      </article>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+/* ============================= */
+/* BLOG PAGE — Clean, consistent typography */
+/* 你只需要改带 🔧 的几行就够了 */
+/* ============================= */
+
+/* ✅ 让 blog 页面不被全局 body 字号影响（尤其是 global.css 的 20px） */
+.blog-container {
+  width: min(100% - 2.4rem, 760px);       /* 🔧 正文宽度：建议 680–760 */
+  margin: 2.5rem auto;     /* 🔧 页面上下留白 */
+  padding: 0 1.2rem;
+  font-size: 16px;         /* 🔧 关键：锁定 rem 基准，让页面不“看起来巨大” */
+}
+
+/* ===== 标题区 ===== */
+.blog-title {
+  font-size: 2rem;         /* 🔧 主标题大小 */
+  line-height: 1.2;
+  font-weight: 750;
+  margin: 0 0 0.5rem 0;
+}
+
+.blog-date {
+  font-size: 0.95rem;      /* 🔧 日期大小 */
+  color: #666;
+  margin: 0;
+}
+
+.blog-divider {
+  margin: 1.5rem 0;        /* 🔧 标题区与正文间距 */
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ===== 正文排版（只管 markdown 渲染出来的内容） ===== */
+.blog-content {
+  color: #222;
+  line-height: 1.4;        /* 🔧 正文行距（推荐 1.65–1.8） */
+}
+
+/* 段落 */
+.blog-content p {
+  margin: 0 0 1rem 0;      /* 🔧 段落间距 */
+  font-size: 1rem;         /* 1rem = 16px (因为上面锁了 font-size:16px) */
+}
+
+/* 二级/三级标题（对应 markdown 的 ## / ###） */
+.blog-content h2 {
+  font-size: 1.2rem;      /* 🔧 “Helpful Resources” 这种标题大小 */
+  font-weight: 750;
+  margin: 2rem 0 0.75rem 0;
+  letter-spacing: -0.01em;
+}
+
+.blog-content h3 {
+  font-size: 1.1rem;       /* 🔧 三级标题大小 */
+  font-weight: 700;
+  margin: 1.5rem 0 0.6rem 0;
+}
+
+/* 列表 */
+.blog-content ul,
+.blog-content ol {
+  margin: 0 0 1rem 1.2rem;
+  padding: 0;
+}
+
+.blog-content li {
+  margin: 0.35rem 0;
+  font-size: 1rem;
+}
+
+/* 引用 */
+.blog-content blockquote {
+  margin: 1.2rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid rgba(0,0,0,0.18);
+  color: rgba(0,0,0,0.7);
+}
+
+/* 链接 */
+.blog-content a {
+  color: var(--rh-link, #1a56db); /* 🔧 若 rh-link 存在则用它 */
+  text-decoration: none;
+}
+.blog-content a:hover {
+  text-decoration: underline;
+}
+
+.blog-content figure {
+  margin: 2rem 0;       /* 上下留白 */
+  margin-inline: 0;     /* ✅ 关键：清掉左右默认缩进 */
+}
+
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.blog-content figcaption {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.6rem;
+  line-height: 1.4;
+  text-align: left;   /* academic 风 */
+}
+
+</style>

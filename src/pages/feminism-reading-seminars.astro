@@ -1,0 +1,162 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import "../styles/global.css";
+import "../styles/typography.css";
+import { feminismReadingSeminars } from "../data/feminismReadingSeminars";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Feminism Reading Seminars | ${SITE_TITLE}`}
+      description="A small archive of feminism reading seminars."
+    />
+  </head>
+
+  <body>
+    <main class="seminars-page">
+      <div class="seminars-container">
+        <section class="seminars-header">
+          <p class="seminars-kicker">Community · Reading · Feminism</p>
+          <h1 class="rh-h2">Feminism Reading Seminars</h1>
+          <p class="rh-p">
+            A small archive of the feminism reading seminars I host. Feel free to reach out if you want to join the future seminars, either as a facilitator or an attendee!
+          </p>
+          <p class="rh-p">
+            <a href="/">← Back to home</a>
+          </p>
+        </section>
+
+        <section class="seminars-table-wrap">
+          <div class="seminars-table seminars-table-head">
+            <div>Series</div>
+            <div>Book Title</div>
+            <div>Author</div>
+            <div>Date</div>
+            <div>Facilitator</div>
+          </div>
+
+          {feminismReadingSeminars.map((item) => (
+            <div class="seminars-table seminars-row">
+              <div>{item.series}</div>
+              <div><i>{item.title}</i></div>
+              <div>{item.author}</div>
+              <div>{item.date}</div>
+              <div>
+                <a
+                  href={item.presenterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.presenter}
+                </a>
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+
+  .seminars-row div:nth-child(2) {
+  line-height: 1.5;
+  }
+
+  .seminars-table {
+    display: grid;
+    grid-template-columns: 1.6fr 2fr 1.6fr 1fr 1.4fr;
+    gap: 16px;
+    padding: 16px 18px;
+    align-items: start;
+    font-size: 0.95rem;   /* 新增这一行 */
+  }
+
+
+  .seminars-page {
+    min-height: 100vh;
+    padding: 48px 20px 72px;
+  }
+
+  .seminars-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  } 
+
+  .seminars-header {
+    margin-bottom: 28px;
+  }
+
+  .seminars-kicker {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #777;
+  }
+
+  .seminars-table-wrap {
+    border: 1px solid #e8e8e8;
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .seminars-table {
+    display: grid;
+    grid-template-columns: 0.6fr 3fr 1.8fr 1.1fr 1.8fr;
+    gap: 16px;
+    padding: 16px 18px;
+    align-items: start;
+  }
+
+  .seminars-table-head {
+    background: #fafafa;
+    font-weight: 600;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .seminars-row {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .seminars-row:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 800px) {
+    .seminars-table {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .seminars-table-head {
+      display: none;
+    }
+
+    .seminars-row {
+      padding: 16px 18px;
+    }
+
+    .seminars-row > div::before {
+      display: block;
+      font-size: 0.82rem;
+      color: #777;
+      margin-bottom: 2px;
+    }
+
+    .seminars-row > div:nth-child(1)::before { content: "Series"; }
+    .seminars-row > div:nth-child(2)::before { content: "Book Title"; }
+    .seminars-row > div:nth-child(3)::before { content: "Author"; }
+    .seminars-row > div:nth-child(4)::before { content: "Date"; }
+    .seminars-row > div:nth-child(5)::before { content: "Presenter"; }
+  }
+</style>

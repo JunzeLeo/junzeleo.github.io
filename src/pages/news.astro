@@ -1,0 +1,41 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+import { getCollection } from 'astro:content';
+
+// 读取所有 news 内容（来自 src/content/news/*.md）
+const news = await getCollection('news');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`News | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>News</h1>
+
+      {news.length === 0 ? (
+        <p>No news yet.</p>
+      ) : (
+        <ul>
+          {news
+            .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+            .map((item) => (
+              <li>
+                <strong>{item.data.title}</strong>
+                <br />
+                <small>{item.data.date.toDateString()}</small>
+              </li>
+            ))}
+        </ul>
+      )}
+    </main>
+    <Footer />
+  </body>
+</html>

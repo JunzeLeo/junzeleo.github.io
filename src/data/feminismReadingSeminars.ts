@@ -1,0 +1,47 @@
+export const feminismReadingSeminars = [
+   {
+    series: "06",
+    title: "“Women by Design”: How Female Players Reimagine Gender in Games (“被设计的女性”: 女性玩家如何重写游戏中的性别想象)",
+    author: "Special Event",
+    date: "2026.05.30",
+    presenter: "Qing Huang @ UW-Madison",
+    presenterUrl: "https://helenaqingh.github.io/",
+  },
+  {
+    series: "05",
+    title: "A Cyborg Manifesto",
+    author: "Donna Haraway",
+    date: "2026.04.26",
+    presenter: "Ruiyi Gao @ UW",
+  },
+  {
+    series: "04",
+    title: "Gendered China 《性别中国》",
+    author: "Jinhua Dai (戴锦华)",
+    date: "2026.03.08",
+    presenter: "Ziqi Pan @ HKUST",
+    presenterUrl: "https://delpanz7.github.io/panz7-now-here/",
+  },
+  {
+    series: "03",
+    title: "Career and Family: Women’s Century-Long Journey toward Equity",
+    author: "Claudia Goldin",
+    date: "2026.01.25",
+    presenter: "Wenxuan Tang @ UW",
+    presenterUrl: "https://wenxuantang.webflow.io/",
+  },
+  {
+    series: "02",
+    title: "Living a Feminist Life",
+    author: "Sara Ahmed",
+    date: "2025.11.29",
+    presenter: "Xinglin Sun @ TJU",
+  },
+  {
+    series: "01",
+    title: "Living a Feminist Life",
+    author: "Sara Ahmed",
+    date: "2025.10.26",
+    presenter: "Xinglin Sun @ TJU",
+  },
+];

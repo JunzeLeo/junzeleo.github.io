@@ -1,0 +1,113 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import PubList from '../components/publications/PubList.astro';
+
+
+import { getCollection } from 'astro:content';
+
+const pubs = await getCollection('publications');
+
+const sorted = pubs.sort((a, b) => {
+  // pinned 的在最上
+  const pd = (b.data.pinned ? 1 : 0) - (a.data.pinned ? 1 : 0);
+  if (pd !== 0) return pd;
+
+  // 然后按 date 倒序（最新在上）
+  return b.data.date.getTime() - a.data.date.getTime();
+});
+
+const allPubItems = sorted.map((p) => ({
+  title: p.data.title,
+  dateYear: p.data.date.getFullYear(),
+  venue: p.data.venue,
+  authors: p.data.authors,
+  tags: p.data.tags ?? [],
+  thumbnail: p.data.thumbnail || '',
+  award: p.data.award || '',
+  links: p.data.links ?? {},
+}));
+
+
+// 预备：筛选用到的集合（先不做 UI，只是后面做筛选会用）
+const allVenues = Array.from(new Set(pubs.map((p) => p.data.venue))).sort();
+const allTypes = Array.from(new Set(pubs.map((p) => p.data.type))).sort();
+const allTags = Array.from(new Set(pubs.flatMap((p) => p.data.tags ?? []))).sort();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`Publications | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+      <main>
+        <PubList heading="Publications" pubs={allPubItems} />
+      </main>
+      
+    <style>
+      .tag-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0 0.5rem;
+      }
+
+      .tag-btn {
+        border: 1px solid currentColor;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .tag-btn[aria-pressed="true"] {
+        font-weight: 600;
+        text-decoration: underline;
+      }
+
+      .tag-hint {
+        margin: 0 0 1rem;
+        font-size: 0.9rem;
+        opacity: 0.75;
+      }
+    </style>
+
+    <script>
+      const container = document.getElementById('tag-filters');
+      const buttons = container?.querySelectorAll('button.tag-btn') ?? [];
+      const items = document.querySelectorAll('li[data-tags]');
+
+      function setActive(tag) {
+        buttons.forEach((b) =>
+          b.setAttribute('aria-pressed', String((b.dataset.tag || '') === tag))
+        );
+
+        let visibleCount = 0;
+        items.forEach((li) => {
+          const tags = (li.getAttribute('data-tags') || '').split(',').filter(Boolean);
+          const show = !tag || tags.includes(tag);
+          li.style.display = show ? '' : 'none';
+          if (show) visibleCount += 1;
+        });
+      }
+
+      // 默认 All
+      setActive('');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tag = btn.dataset.tag || '';
+          const isAlreadyActive =
+            btn.getAttribute('aria-pressed') === 'true' && tag !== '';
+          setActive(isAlreadyActive ? '' : tag);
+        });
+      });
+    </script>
+    <Footer />
+  </body>
+</html>

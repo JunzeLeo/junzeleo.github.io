@@ -1,0 +1,269 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import PubList from '../components/publications/PubList.astro';
+import { education, internship, awards } from "../data/homeSection";
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { news } from "../data/news";
+import { getCollection } from 'astro:content';
+import { marked } from "marked";
+import "../styles/global.css";
+import "../styles/typography.css";
+import { academicServices } from "../data/academicServices";
+import { teachingAssistant } from "../data/teachingAssistant";
+
+
+
+
+const newsItems = [...news].sort((a, b) => {
+  const pd = (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+  if (pd !== 0) return pd;
+  return b.date.localeCompare(a.date); // "2025-11" > "2025-10"
+});
+// Selected Publications：只显示 selected=true 的
+const allPubs = await getCollection('publications');
+const selectedPubs = allPubs
+  .filter((p) => p.data.selected)
+  .sort((a, b) => {
+    const pd = (b.data.pinned ? 1 : 0) - (a.data.pinned ? 1 : 0);
+    if (pd !== 0) return pd;
+    return b.data.date.getTime() - a.data.date.getTime();
+  })
+const homePubTags = Array.from(
+  new Set(selectedPubs.flatMap((p) => p.data.tags ?? []))
+).sort();
+
+console.log(
+  selectedPubs.map((p) => ({
+    slug: p.slug,
+    venue: p.data.venue,
+    title: p.data.title,
+  }))
+);
+
+
+const selectedPubItems = selectedPubs.map((p) => ({
+  title: p.data.title,
+  dateYear: p.data.date.getFullYear(),
+  venue: p.data.venue,
+  authors: p.data.authors,
+  tags: p.data.tags ?? [],
+  thumbnail: p.data.thumbnail || '',
+  award: p.data.award || '',
+  links: p.data.links ?? {},
+}));
+
+// Latest Blogs：取最新 3 篇（模板 blog 用 pubDate）
+const allBlogs = await getCollection('blog');
+
+const blogItems = allBlogs
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .map((b) => ({
+    date: b.data.pubDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }),
+    title: b.data.title,
+    href: `/blog/${b.slug}/`,
+  }));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`Home | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+
+  </head>
+    <body>
+      <main class="home">
+        <div class="container">
+          <!-- Left column -->
+          <aside class="sidebar">
+            <section class="profile">
+              <img src="/images/junzeli.jpeg" alt="Junze Li" />
+              <p class="rh-p-contact"> Ph.D. Candidate @ HKUST</p>
+              <p class="rh-p-contact"> junze.li@connect.ust.hk</p>
+
+              <div class="social-icons">
+                <a href="https://scholar.google.com/citations?hl=en&user=Hk8OyXwAAAAJ" target="_blank">
+                  <img src="/icons/gs.png" alt="Google Scholar" />
+                </a>
+
+                <a href="https://www.linkedin.com/in/junze-li-782b62185/" target="_blank">
+                  <img src="/icons/linkedin.png" alt="LinkedIn" />
+                </a>
+
+                <a href="https://x.com/LJunze" target="_blank">
+                  <img src="/icons/twitter.png" alt="Twitter" />
+                </a>
+
+              </div>
+            </section>
+
+            <section class="news-block">
+              <h2 class="rh-h3">Latest News</h2>
+              <div class="news-scroll side-scroll" data-scrollhint>
+                {newsItems.map((item) => (
+                  <div class="news-item">
+                    <span set:html={marked.parse(item.text)}></span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section class="service-block">
+              <h2 class="rh-h3">Academic Services</h2>
+
+              <div class="service-group">
+                <div class="service-group-title"><b>Reviewer</b></div>
+                <ul class="service-list">
+                  {academicServices
+                    .filter((x) => x.description?.includes("Reviewer"))
+                    .map((item) => (
+                      <li class="service-row">
+                        {item.date && <span class="service-year">{item.date}</span>}
+                        <span class="service-venue">{item.title}</span>
+                        {item.pinned && <span class="service-star">★</span>}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="teaching-block">
+              <h2 class="rh-h3">Teaching Assistant</h2>
+
+              <ul class="teaching-list">
+                {teachingAssistant.map((item) => (
+                  <li class="teaching-row">
+                    <div class="teaching-main">
+                      {item.term ? <span class="teaching-term">{item.term}</span> : null}
+                      <span class="teaching-course">{item.course}</span>
+                      <span class="teaching-title">{item.title}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+
+
+          </aside>
+
+          <!-- Right column -->
+          <section class="content rh-content">
+
+            <section class="about-block">
+              <h1 class="rh-h2">Junze (Leo) LI</h1>
+              <p class="rh-p"> 
+                Hi! I am a Ph.D. candidate at The Hong Kong University of Science and Technology (HKUST), supervised by <a href="https://www.cse.ust.hk/~mxj/" target="_blank" rel="noopener noreferrer">Prof. Xiaojuan MA</a>. My research focuses on building interactive AI systems that support the scientific research cycle, from information synthesis and sensemaking to inference and communication. Currently, I work on improving the reasoning abilities of large language models (LLMs) for multimodal scientific problems and designing context-aware agents to facilitate research tasks.
+              </p>  
+              <p class="rh-p">
+                Previously, I earned my master degree in Communication Systems from School of Computer and Communication Sciences at École Polytechnique Fédérale de Lausanne (EPFL), working with <a href="https://www.epfl.ch/labs/gr-pu/members/pearl-pu/" target="_blank" rel="noopener noreferrer">Prof. Pearl Pu</a> and <a href="https://cisnlp.github.io/" target="_blank" rel="noopener noreferrer">Prof. Hinrich Schütze</a>. I received my undergraduate degree in Communication Engineering from School of Information and Communication Engineering at University of Electronic Science and Technology of China (UESTC).
+              </p>
+              
+            </section>
+
+            <!-- Publications section header -->
+            <section class="home-section">
+              <h2 class="rh-h2">Publications</h2>
+            </section>
+            <PubList pubs={selectedPubItems} moreHref="/publications" />
+
+
+            <section class="home-section">
+              <h2 class="rh-h3">Education</h2>
+
+              <div class="flat-list">
+                {education.map((e) => (
+                  <div class="flat-row">
+                    <span class="flat-period">{e.period}</span>
+                    <div class="flat-main">
+                      <div>
+                        {e.title}{" · "}
+                        {e.link ? (
+                          <a href={e.link} target="_blank" rel="noopener noreferrer">
+                            {e.org}
+                          </a>
+                        ) : (
+                          <span>{e.org}</span>
+                        )}
+                        {e.meta ? <span class="muted"> {e.meta}</span> : null}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section class="home-section">
+              <h2 class="rh-h3">Internship</h2>
+
+              <div class="flat-list">
+                {internship.map((e) => (
+                  <div class="flat-row">
+                    <span class="flat-period">{e.period}</span>
+                    <div class="flat-main">
+                      <div>
+                        {e.title}{" · "}
+                        {e.link ? (
+                          <a href={e.link} target="_blank" rel="noopener noreferrer">
+                            {e.org}
+                          </a>
+                        ) : (
+                          <span>{e.org}</span>
+                        )}
+                        {e.meta ? <span class="muted"> {e.meta}</span> : null}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section class="home-section">
+              <h2 class="rh-h3">Awards</h2>
+
+              {awards.map((g) => (
+                <div class="award-group">
+                  <div class="group-title"><b>{g.group}</b></div>
+
+                  <div class="flat-list">
+                    {g.items.map((a) => (
+                      <div class="flat-row">
+                        <span class="flat-period">{a.date}</span>
+                        <div class="flat-main">
+                          {a.title}
+                          {a.note ? <span class="muted"> {a.note}</span> : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+
+          </section>
+        </div>
+      </main>
+
+        <script is:inline>
+        function bindScrollHint(el){
+          const update = () => {
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+            el.dataset.atBottom = String(atBottom);
+          };
+          update();
+          el.addEventListener('scroll', update, { passive: true });
+          window.addEventListener('resize', update);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('[data-scrollhint]').forEach(bindScrollHint);
+        });
+      </script>
+
+      <Footer />
+    </body>
+</html>
