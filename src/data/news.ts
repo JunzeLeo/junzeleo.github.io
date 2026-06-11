@@ -45,7 +45,7 @@ export const news: NewsItem[] = [
   },
   {
     date: "2025-12",
-    text: `[11/2025] ✈️ Visited the Future Lab in Tsinghua Univeristy!`,
+    text: `[12/2025] ✈️ Visited the Future Lab in Tsinghua Univeristy!`,
   },
   {
     date: "2025-07",
@@ -69,7 +69,7 @@ export const news: NewsItem[] = [
   },
   {
     date: "2024-04",
-    text: `[04/2024] 🥳 Passed my PhD Qualifying Exam and became a Phd Candidate!`,
+    text: `[04/2024] 🥳 Passed my PhD Qualifying Exam and became a PhD Candidate!`,
   },
   {
     date: "2024-03",
